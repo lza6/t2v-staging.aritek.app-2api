@@ -47,26 +47,35 @@ def tap_ui_sequence():
     return False
 
 def refresh_once():
+    """盲点法：force-stop → 启动 → 等 45s → 弹窗坐标清屏 → 点 Generate 固定坐标 → 等 token 落盘。
+    比 uiautomator dump 抗干扰（导流 app 抢前台不影响 AIVG 自身的 sp 落盘）。"""
     old = current_token()
-    adb("shell", "am", "force-stop", PKG)
-    time.sleep(2)
-    frozen_interlopers()
-    adb("shell", "am", "start", "-n", f"{PKG}/.ui.activity.SplashActivity")
-    # 等 Generate 出现（最多 90s）
-    ok = False
-    for _ in range(18):
-        time.sleep(10)
-        if tap_ui_sequence():
-            ok = True
-            break
-    time.sleep(20)  # 等 token 落盘
-    new = current_token()
-    if new and new != old:
-        open("D:/aivg188/TOKEN.txt", "w").write(new)
-        print(f"[{time.strftime('%H:%M:%S')}] token refreshed, len={len(new)}", flush=True)
-        return True
-    print(f"[{time.strftime('%H:%M:%S')}] refresh failed (ok={ok}, got={bool(new)})", flush=True)
+    for attempt in range(3):  # 最多 3 轮（splash 广告链有时需要多轮放行）
+        adb("shell", "am", "force-stop", PKG)
+        time.sleep(2)
+        frozen_interlopers()
+        adb("shell", "am", "start", "-n", f"{PKG}/.ui.activity.SplashActivity")
+        time.sleep(45)
+        # 弹窗清屏：不再显示 toggle → 取消 → (可能的 New Update) OK
+        for xy in (("540","1745"), ("358","1580"), ("540","1500")):
+            subprocess.run([ADB, DEV, "shell", "input", "tap", xy[0], xy[1]], capture_output=True)
+            time.sleep(1)
+        # 盲点 Generate（实测稳定坐标 593,1271 或 593,1317）
+        subprocess.run([ADB, DEV, "shell", "input", "tap", "593", "1271"], capture_output=True)
+        time.sleep(20)
+        new = current_token()
+        if new and new != old:
+            open("D:/aivg188/TOKEN.txt", "w").write(new)
+            print(f"[{time.strftime('%H:%M:%S')}] token refreshed (attempt {attempt+1}), len={len(new)}", flush=True)
+            return True
+        # 导流包又抢前台：force-stop 它们再试
+        for p2 in ("com.technosub.unlimitedaiimagen", "com.blackhole.hd1763494114",
+                   "art.dreamerai.android", "org.greatfire.gfvpn", "com.enzo.paulo"):
+            adb("shell", "am", "force-stop", p2)
+            adb("shell", "pm", "disable-user", "--user", "0", p2)
+    print(f"[{time.strftime('%H:%M:%S')}] refresh failed after 3 attempts", flush=True)
     return False
+
 
 if __name__ == "__main__":
     print("token refresher started", flush=True)
