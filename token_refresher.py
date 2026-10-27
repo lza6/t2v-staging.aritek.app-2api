@@ -10,7 +10,9 @@ ADB = r"D:\android-sdk\platform-tools\adb.exe"
 PKG = "ai.video.generator.text.video"
 DEV = "-s emulator-5554"
 SP = f"/data/data/{PKG}/shared_prefs/SoliText2Video.xml"
-REFRESH_MIN = 45  # JWT 1h 有效, 45min 刷一次
+REFRESH_MIN = 45  # 轮询间隔
+# 关键认知: app 只在 token 过期后才重新 bootstrap 签新 JWT（未过期时点 Generate 不刷新）。
+# 所以正确节律 = 等 exp 剩 <10min 时 force-stop 重启 app, app 自己调 user/info 续签（服务端认可 app 内的完整 bootstrap 流程）。
 
 def adb(*args):
     return subprocess.run([ADB, DEV] + list(args), capture_output=True, text=True, timeout=60).stdout
@@ -46,9 +48,24 @@ def tap_ui_sequence():
         pass
     return False
 
+def token_hours_left():
+    import base64
+    t = current_token()
+    if not t: return -1
+    try:
+        p = t.split(".")[1]
+        payload = json.loads(base64.urlsafe_b64decode(p + "=" * (-len(p) % 4)))
+        return (payload.get("exp", 0) - time.time()) / 3600
+    except Exception:
+        return -1
+
 def refresh_once():
-    """盲点法：force-stop → 启动 → 等 45s → 弹窗坐标清屏 → 点 Generate 固定坐标 → 等 token 落盘。
-    比 uiautomator dump 抗干扰（导流 app 抢前台不影响 AIVG 自身的 sp 落盘）。"""
+    """续期 = 等 token 快过期(<10min) → force-stop 重启 app → app 检测过期自动调 user/info 签新 JWT 落盘 sp。
+    未过期时点 Generate 不会刷新 token（服务端直接复用）。导流 app 抢前台用冻结循环清场。"""
+    left = token_hours_left()
+    if left > 10/60:
+        print(f"[{time.strftime('%H:%M:%S')}] token still {left:.2f}h left, skip", flush=True)
+        return True
     old = current_token()
     for attempt in range(3):  # 最多 3 轮（splash 广告链有时需要多轮放行）
         adb("shell", "am", "force-stop", PKG)
