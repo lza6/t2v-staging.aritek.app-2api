@@ -96,7 +96,11 @@ User-Agent: okhttp/4.x
 1. `res/xml/network_security_config.xml` → 信任用户 CA（mitmproxy 抓 HTTPS）
 2. `AndroidManifest.xml` → `android:debuggable="true"`
 
-文件: `patched/aivg-patched-aligned-debugSigned.apk`
+文件:
+- `patched/aivg-patched-aligned-debugSigned.apk` — v1（NSC 文件改动，但原版 manifest 未引用 NSC，无效）
+- `patched/aivg-patched2-aligned-debugSigned.apk` — **v2（修复：manifest `<application>` 增加 `android:networkSecurityConfig="@xml/network_security_config"` + debuggable）**
+
+⚠️ 关键坑：**只改 NSC 文件不够，原版 manifest 根本没引用它**。完整复盘见 `docs/REVERSE_REPORT.md` 第十一节。
 
 抓包步骤（模拟器需 root）：
 ```powershell
