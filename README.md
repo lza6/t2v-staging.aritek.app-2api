@@ -158,3 +158,29 @@ token 到手后，参照本仓库 `demo_server.py` 的协议实现即可在 new-
 ## 十、合规边界
 
 上游为第三方生产服务器 — 只做低频功能验证，不做压测。所有压测针对本地 demo 服务器。
+
+---
+
+## 🎉 2026-10-28 全链路打通（已实测）
+
+**t2v 200 OK，返回真实视频 URL**：
+```
+POST api/v3/video/t2v → {"code":0, "data":{"url":"https://sora.aritek.app/generated/t2vSt....mp4"}}
+```
+- CDN 下载需带 `Sign` + `Authorization: Bearer <token>` 头（裸访问 403），`Range` 分段可用（206）
+- `check-limit` 正确 type 值：`t2v_prompt`（guest 限额 2 次，剩余 1 实测）
+- JWT payload: `{user_id, device_id, sign, ctry_target, user_type:"guest", exp(≈1h)}`
+- **`user/info` 401 Invalid signature 之谜未解也不重要**——JWT 直接从设备 sp 导出即可
+
+### aivg_2api_bridge.py（OpenAI 兼容桥接）
+- `GET /health` → token 剩余小时
+- `POST /v1/chat/completions` messages → 视频 URL markdown
+- `POST /t2v {"prompt":...}` → `{"video_url":...}`
+- token 过期(~1h)重新从设备导出即可；桥接自动 30min 重载 TOKEN.txt
+
+### token 导出步骤（模拟器实测路径）
+1. `emulator -avd remakeface -http-proxy 127.0.0.1:8080 -no-snapshot`（mitmdump 8080 可选，其实不需要 MITM 了）
+2. 清导流 app（`pm disable-user --user 0 com.technosub.unlimitedaiimagen` 等）避免抢单前台
+3. 装 patched APK，启动过 splash/弹窗到主界面，点一次 Generate
+4. `adb shell cat /data/data/ai.video.generator.text.video/shared_prefs/SoliText2Video.xml | grep user_token`
+5. 写入 `TOKEN.txt` → 启动 bridge → done
