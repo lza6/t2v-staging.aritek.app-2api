@@ -81,7 +81,33 @@ JWT payload 解码：`user_id = device_id = <Device-Id>`, `user_type:"guest"`, `
 2. 1.8.8 遗留的 "user/info 额外校验需动态抓包" 缺口 → 已解决：Sign 白名单值 + 任意 Device-Id 即可签发 guest JWT。
 3. staging 域名 `t2v-staging` 仍存活（远程配置下发），但生产 `t2v` 是 b91 的默认。
 
-## 六、剩余事项
+## 六、第二轮补测（i2v/i2i + 配额 + 视频参数，全部已验证 ✅）
+
+### i2v / i2i multipart（全部打通）
+| 端点 | multipart 字段 | 实测 |
+|---|---|---|
+| `/api/v4/video/i2v` | `image`(文件) + `code`(模板code) + `prompt`(文本) | ✅ 200 jobId → 轮询 `succeeded` MP4 |
+| `/api/v4/image/i2i` | `images`(**复数**！文件) + `code`(模板code) | ✅ 200 jobId → 轮询 `succeeded` PNG |
+
+（注意 i2v 用单数 `image`，i2i 用复数 `images` — 服务端不对称设计）
+
+### 免费 guest 配额（`/api/v1/user/check-limit?type=`，参数名是 `type` 不是 ad_type）
+| 类型 | remaining/total | 说明 |
+|---|---|---|
+| t2v_prompt | 10/10 | 每 device_id 10 次文生视频 |
+| t2i_prompt | 3/3 | 每 device_id 3 次文生图 |
+| i2i_edit | 1/1 | 每 device_id 1 次图生图 |
+| i2v_prompt | -21 Premium required | **但实测服务端不强制** — i2v 成功出片，limit 只是客户端 UI 检查 |
+
+**号池策略**：device_id 任意伪造（32位hex）→ 配额用尽换新 ID 即可无限生成。demo_server 已内置（device_pool.json 持久化 + 自动轮换 + /health 暴露池状态）。
+
+### 视频参数（CreateVideoRequest 全字段，已验证）
+- `prompt`(str) / `aspect_ratio`("auto"/"16:9"/"9:16"，非法值静默回退) / `ai_sound`("1"→aac 音轨 ✅ 实测 4.87s 视频 / 对照无声) / `isPremium`(0/1) / `used`(模板去重列表) / `deviceID` / `versionCode` / `ctry_target`
+- **无 duration 参数** — 时长由上游模型决定（ft3.1.0 ≈ 5s），客户端无此控制项
+
+### 速率限制
+- 3/6/10 并发 t2i 提交全部 200，无 429/403，P99 ~1.3s
+- 无发现硬限流；稳定运营建议：≤5 并发 + 号池轮换（每 device_id 用满即换）
+
+## 七、剩余事项
 - `moderation/check-input` 正确 multipart 形态待补测（Retrofit `@q` 注解为 MultipartBody.Part）
-- i2v/i2i（multipart 文件上传）未实测
-- 速率限制未探测到硬阈值（5 并发无 429），大规模使用建议低频

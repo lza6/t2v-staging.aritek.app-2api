@@ -32,6 +32,51 @@ STATS = {"requests": 0, "errors": 0, "jobs_submitted": 0, "bootstraps": 0}
 TOKENS = {}
 TOKENS_LOCK = threading.Lock()
 
+# 号池: device_id -> {"t2v": n, "t2i": n, "i2i": n}  (免费 guest 配额实测: 10/3/1)
+# 用尽自动换新 device_id (无限白嫖轮换)
+POOL_FILE = "device_pool.json"
+QUOTA = {"t2v": 10, "t2i": 3, "i2i": 1}
+POOL = {}
+POOL_LOCK = threading.Lock()
+
+
+def _load_pool():
+    global POOL
+    try:
+        POOL = json.load(open(POOL_FILE))
+    except Exception:
+        POOL = {}
+
+
+def _save_pool():
+    try:
+        json.dump(POOL, open(POOL_FILE, "w"))
+    except Exception:
+        pass
+
+
+def acquire_device(kind):
+    """取一个该 kind 还有余量的 device_id, 没有就注册新号"""
+    with POOL_LOCK:
+        for dev, used in POOL.items():
+            if used.get(kind, 0) < QUOTA[kind]:
+                return dev
+        import uuid
+        dev = uuid.uuid4().hex  # 32位hex, 与 Android ANDROID_ID 格式一致
+        POOL[dev] = {"t2v": 0, "t2i": 0, "i2i": 0}
+        _save_pool()
+        return dev
+
+
+def consume_device(kind):
+    with POOL_LOCK:
+        for dev, used in POOL.items():
+            if used.get(kind, 0) < QUOTA[kind]:
+                used[kind] = used.get(kind, 0) + 1
+                _save_pool()
+                return dev
+    return None
+
 MODELS = [
     {"id": "aivg-t2v", "object": "model", "owned_by": "aritek"},
     {"id": "aivg-t2i", "object": "model", "owned_by": "aritek"},
@@ -120,6 +165,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, {
                 "ok": True, "upstream": UPSTREAM, "sign": SIGN[:12] + "…",
                 "stats": STATS, "tokens_cached": len(TOKENS), "jobs": jobs,
+                "pool": {"devices": len(POOL), "quota": QUOTA,
+                         "used": {d: u for d, u in list(POOL.items())[:10]}},
             })
         if self.path == "/v1/models":
             return self._send(200, {"object": "list", "data": MODELS})
@@ -149,8 +196,9 @@ class Handler(BaseHTTPRequestHandler):
             STATS["errors"] += 1
             return self._send(400, {"error": "prompt required"})
 
-        device_id = str(payload.get("device_id", "")).strip() or "aivg2api-default-0000000001"
         is_video = self.path == "/v1/videos/generations"
+        kind = "t2v" if is_video else "t2i"
+        device_id = str(payload.get("device_id", "")).strip() or acquire_device(kind)
 
         if self.path in ("/v1/images/generations", "/v1/videos/generations"):
             try:
@@ -172,6 +220,10 @@ class Handler(BaseHTTPRequestHandler):
             if resp.get("code") != 0:
                 STATS["errors"] += 1
                 return self._send(502, {"upstream_status": code, "upstream": resp})
+            with POOL_LOCK:
+                if device_id in POOL:
+                    POOL[device_id][kind] = POOL[device_id].get(kind, 0) + 1
+                    _save_pool()
             data = resp.get("data", {})
             if is_video:
                 # t2v 同步出片
@@ -209,6 +261,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
+    _load_pool()
     threading.Thread(target=poll_jobs, daemon=True).start()
     print(f"[aivg-2api v1.9.1] listening on 0.0.0.0:{PORT} -> {UPSTREAM} (Sign={SIGN[:12]}…, 全链路打通)")
     ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()
