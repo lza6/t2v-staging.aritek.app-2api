@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>AIVG v1.9.1 b91 — 2API Demo</title>
+<style>
+  body{font-family:system-ui,"Microsoft YaHei";max-width:960px;margin:24px auto;padding:0 16px;background:#0f1117;color:#e2e6ef}
+  h1{color:#7ab8ff} h2{border-bottom:1px solid #2a2f3d;padding-bottom:6px;margin-top:32px}
+  .card{background:#171b26;border:1px solid #2a2f3d;border-radius:10px;padding:16px;margin:12px 0}
+  textarea,input{width:100%;box-sizing:border-box;background:#0f1117;color:#e2e6ef;border:1px solid #2a2f3d;border-radius:6px;padding:8px;font-family:inherit}
+  button{background:#2f6fdb;color:#fff;border:none;border-radius:6px;padding:8px 18px;margin-top:8px;cursor:pointer}
+  button:hover{background:#3d7ee8}
+  pre{background:#0a0c12;border-radius:6px;padding:10px;overflow:auto;font-size:12px;max-height:300px}
+  .row{display:flex;gap:12px}.row>*{flex:1}
+  .tag{display:inline-block;background:#22303f;color:#7ab8ff;border-radius:4px;padding:2px 8px;font-size:12px;margin-right:6px}
+  .warn{color:#ffb35c}
+</style>
+</head>
+<body>
+<h1>🎬 AIVG v1.9.1 b91 — 2API Demo</h1>
+<p>
+  <span class="tag">上游 t2v.aritek.app（生产）</span>
+  <span class="tag">v4 协议</span>
+  <span class="tag">端口 8903</span>
+</p>
+<div class="card warn">⚠️ 生成类端点（t2v/t2i/moderation）需要合法 user_token(JWT)。当前 token bootstrap 缺口未打通（user/info 有独立签名校验），demo 中这些请求会原样透传上游 401。</div>
+
+<div class="card">
+  <h2 style="margin-top:0">🩺 服务状态</h2>
+  <button onclick="fetch('/health').then(r=>r.json()).then(j=>show('health',j))">查看 /health</button>
+  <pre id="health">—</pre>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">🏠 上游模板目录（免鉴权）</h2>
+  <button onclick="fetch('/native/home').then(r=>r.json()).then(j=>show('home',j))">拉取 /api/v3/t2v/home</button>
+  <pre id="home">—</pre>
+</div>
+
+<div class="row">
+  <div class="card">
+    <h2 style="margin-top:0">🖼️ 文生图 t2i</h2>
+    <textarea id="t2iPrompt" rows="3">a red apple on a wooden table</textarea>
+    <button onclick="gen('/v1/images/generations','t2iPrompt','t2iOut')">提交</button>
+    <pre id="t2iOut">—</pre>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0">🎥 文生视频 t2v</h2>
+    <textarea id="t2vPrompt" rows="3">a cat walking slowly in the garden</textarea>
+    <button onclick="gen('/v1/videos/generations','t2vPrompt','t2vOut')">提交</button>
+    <pre id="t2vOut">—</pre>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">🛡️ 内容审核 moderation</h2>
+  <input id="modInput" value="a beautiful sunset over the ocean">
+  <button onclick="fetch('/v1/moderation',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({input:document.getElementById('modInput').value})}).then(r=>r.json()).then(j=>show('modOut',j))">检测</button>
+  <pre id="modOut">—</pre>
+</div>
+
+<script>
+function show(id, j){ document.getElementById(id).textContent = JSON.stringify(j, null, 2); }
+function gen(path, inputId, outId){
+  const prompt = document.getElementById(inputId).value.trim();
+  if(!prompt) return alert('prompt 不能为空');
+  fetch(path, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({prompt})})
+    .then(r=>r.json()).then(j=>show(outId, j)).catch(e=>show(outId, {error:String(e)}));
+}
+</script>
+</body>
+</html>

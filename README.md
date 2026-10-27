@@ -1,4 +1,10 @@
-# AI Video Generator 1.8.8 → 2API 逆向报告
+# AI Video Generator (aritek) 2API — 1.8.8 与 1.9.1 双版本逆向仓库
+
+> **🆕 v1.9.1 b91 全链路打通版** → [v1.9.1/](v1.9.1/REVERSE_REPORT_v191.md)：生产 t2v.aritek.app v4 协议、Sign 白名单值破解、guest JWT 自动 bootstrap、t2v 同步出 MP4 / t2i 异步 PNG、OpenAI 兼容 demo_server。
+
+---
+
+# AI Video Generator 1.8.8 → 2API 逆向报告（v88）
 
 > 仓库: https://github.com/lza6/t2v-staging.aritek.app-2api
 > 目标 APK: `AI Video Generator_1.8.8.apk`（包名 `ai.video.generator.text.video`，versionCode 88）
