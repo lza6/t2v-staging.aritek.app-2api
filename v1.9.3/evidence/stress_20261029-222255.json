@@ -1,0 +1,557 @@
+{
+  "ts": "20261029-222255",
+  "upstream": "https://t2v.aritek.app",
+  "version": "1.9.3",
+  "sign": "68d6165b72a7f2d8d17b0dc6fe9691abdf77c583",
+  "runs": [
+    {
+      "summary": {
+        "name": "R1 t2v 并发 8（独立设备）",
+        "n": 8,
+        "workers": 8,
+        "wall_s": 5.3,
+        "ok": 8,
+        "fail": 0,
+        "success_rate": 100.0,
+        "latency_ms": {
+          "p50": 3800.0,
+          "p90": 5295,
+          "p99": 5295,
+          "max": 5295,
+          "avg": 3956
+        },
+        "errors": {}
+      },
+      "rows": [
+        {
+          "i": 0,
+          "device": "c0e8eaad",
+          "ok": true,
+          "ms": 3404,
+          "url": "https://sora.aritek.app/generated/t2vStS51025n9yr81mbpnrmc0ct3k29p57tq0-ft300P.mp4"
+        },
+        {
+          "i": 1,
+          "device": "e5c68e57",
+          "ok": true,
+          "ms": 3572,
+          "url": "https://sora.aritek.app/generated/t2vStS51025n9yr81mbpnrmc0ct3k29p57tq0-ft300P.mp4"
+        },
+        {
+          "i": 2,
+          "device": "db48b137",
+          "ok": true,
+          "ms": 3852,
+          "url": "https://sora.aritek.app/generated/t2vStS51025n9yr81mbpnrmc0ct3k29p57tq0-ft300P.mp4"
+        },
+        {
+          "i": 3,
+          "device": "9df10a67",
+          "ok": true,
+          "ms": 3677,
+          "url": "https://sora.aritek.app/generated/t2vStS51025n9yr81mbpnrmc0ct3k29p57tq0-ft300P.mp4"
+        },
+        {
+          "i": 4,
+          "device": "e1cd5335",
+          "ok": true,
+          "ms": 4129,
+          "url": "https://sora.aritek.app/generated/t2vStS51025n9yr81mbpnrmc0ct3k29p57tq0-ft300P.mp4"
+        },
+        {
+          "i": 5,
+          "device": "076bb702",
+          "ok": true,
+          "ms": 3971,
+          "url": "https://sora.aritek.app/generated/t2vStS51025n9yr81mbpnrmc0ct3k29p57tq0-ft300P.mp4"
+        },
+        {
+          "i": 6,
+          "device": "b880ee1f",
+          "ok": true,
+          "ms": 5295,
+          "url": "https://sora.aritek.app/generated/t2vStS51025n9yr81mbpnrmc0ct3k29p57tq0-ft300P.mp4"
+        },
+        {
+          "i": 7,
+          "device": "78eab6bb",
+          "ok": true,
+          "ms": 3748,
+          "url": "https://sora.aritek.app/generated/t2vStS51025n9yr81mbpnrmc0ct3k29p57tq0-ft300P.mp4"
+        }
+      ]
+    },
+    {
+      "summary": {
+        "name": "R2 bootstrap 并发 30",
+        "n": 30,
+        "workers": 15,
+        "wall_s": 8.9,
+        "ok": 30,
+        "fail": 0,
+        "success_rate": 100.0,
+        "latency_ms": {
+          "p50": 2609.0,
+          "p90": 3932,
+          "p99": 5853,
+          "max": 5853,
+          "avg": 2831.83
+        },
+        "errors": {}
+      },
+      "rows": [
+        {
+          "i": 0,
+          "ok": true,
+          "ms": 4151,
+          "ttl": 3479,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 1,
+          "ok": true,
+          "ms": 3067,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 2,
+          "ok": true,
+          "ms": 2577,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 3,
+          "ok": true,
+          "ms": 3127,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 4,
+          "ok": true,
+          "ms": 2496,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 5,
+          "ok": true,
+          "ms": 2575,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 6,
+          "ok": true,
+          "ms": 2938,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 7,
+          "ok": true,
+          "ms": 3168,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 8,
+          "ok": true,
+          "ms": 3014,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 9,
+          "ok": true,
+          "ms": 3015,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 10,
+          "ok": true,
+          "ms": 3619,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 11,
+          "ok": true,
+          "ms": 2904,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 12,
+          "ok": true,
+          "ms": 2628,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 13,
+          "ok": true,
+          "ms": 2547,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 14,
+          "ok": true,
+          "ms": 2590,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 15,
+          "ok": true,
+          "ms": 1971,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 16,
+          "ok": true,
+          "ms": 2164,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 17,
+          "ok": true,
+          "ms": 2141,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 18,
+          "ok": true,
+          "ms": 2085,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 19,
+          "ok": true,
+          "ms": 2533,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 20,
+          "ok": true,
+          "ms": 2171,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 21,
+          "ok": true,
+          "ms": 2652,
+          "ttl": 3479,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 22,
+          "ok": true,
+          "ms": 2252,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 23,
+          "ok": true,
+          "ms": 5853,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 24,
+          "ok": true,
+          "ms": 2862,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 25,
+          "ok": true,
+          "ms": 2421,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 26,
+          "ok": true,
+          "ms": 3932,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 27,
+          "ok": true,
+          "ms": 1933,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 28,
+          "ok": true,
+          "ms": 3435,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        },
+        {
+          "i": 29,
+          "ok": true,
+          "ms": 2134,
+          "ttl": 3480,
+          "limit": {
+            "allowed": true,
+            "remaining": 10,
+            "total_limit": 10
+          }
+        }
+      ]
+    },
+    {
+      "summary": {
+        "name": "R3 t2i 并发 4（异步轮询）",
+        "n": 4,
+        "workers": 4,
+        "wall_s": 17.7,
+        "ok": 4,
+        "fail": 0,
+        "success_rate": 100.0,
+        "latency_ms": {
+          "p50": 12459.5,
+          "p90": 17687,
+          "p99": 17687,
+          "max": 17687,
+          "avg": 12960.75
+        },
+        "errors": {}
+      },
+      "rows": [
+        {
+          "i": 0,
+          "ok": true,
+          "ms": 10643,
+          "url": "https://sora.aritek.app/generates/20261029/1793283795132_7c11656d7e4e4ca4.png"
+        },
+        {
+          "i": 1,
+          "ok": true,
+          "ms": 9237,
+          "url": "https://sora.aritek.app/generates/20261029/1793283793632_658ebeb7c24c4792.png"
+        },
+        {
+          "i": 2,
+          "ok": true,
+          "ms": 17687,
+          "url": "https://sora.aritek.app/generates/20261029/1793283794072_0d5cd49fc3114aa6.png"
+        },
+        {
+          "i": 3,
+          "ok": true,
+          "ms": 14276,
+          "url": "https://sora.aritek.app/generates/20261029/1793283793851_067302afd37242da.png"
+        }
+      ]
+    },
+    {
+      "summary": {
+        "name": "R4 单设备配额"
+      },
+      "rows": [
+        {
+          "i": 0,
+          "ok": true,
+          "ms": 3034,
+          "url": "https://sora.aritek.app/generated/t2vStS511078a82a8c8y9rmc0ctbx3ry8nby0-ft3.1.0.mp4"
+        },
+        {
+          "i": 1,
+          "ok": true,
+          "ms": 1851,
+          "url": "https://sora.aritek.app/generated/t2vStS511078a82a8c8y9rmc0ctbx3ry8nby0-ft3.1.0.mp4"
+        },
+        {
+          "i": 2,
+          "ok": true,
+          "ms": 1895,
+          "url": "https://sora.aritek.app/generated/t2vStS511078a82a8c8y9rmc0ctbx3ry8nby0-ft3.1.0.mp4"
+        },
+        {
+          "i": 3,
+          "ok": true,
+          "ms": 1652,
+          "url": "https://sora.aritek.app/generated/t2vStS511078a82a8c8y9rmc0ctbx3ry8nby0-ft3.1.0.mp4"
+        },
+        {
+          "i": 4,
+          "ok": true,
+          "ms": 1848,
+          "url": "https://sora.aritek.app/generated/t2vStS511078a82a8c8y9rmc0ctbx3ry8nby0-ft3.1.0.mp4"
+        },
+        {
+          "i": 5,
+          "ok": true,
+          "ms": 1942,
+          "url": "https://sora.aritek.app/generated/t2vStS511078a82a8c8y9rmc0ctbx3ry8nby0-ft3.1.0.mp4"
+        },
+        {
+          "i": 6,
+          "ok": true,
+          "ms": 1774,
+          "url": "https://sora.aritek.app/generated/t2vStS511078a82a8c8y9rmc0ctbx3ry8nby0-ft3.1.0.mp4"
+        },
+        {
+          "i": 7,
+          "ok": true,
+          "ms": 1991,
+          "url": "https://sora.aritek.app/generated/t2vStS511078a82a8c8y9rmc0ctbx3ry8nby0-ft3.1.0.mp4"
+        },
+        {
+          "i": 8,
+          "ok": true,
+          "ms": 1906,
+          "url": "https://sora.aritek.app/generated/t2vStS511078a82a8c8y9rmc0ctbx3ry8nby0-ft3.1.0.mp4"
+        },
+        {
+          "i": 9,
+          "ok": true,
+          "ms": 1650,
+          "url": "https://sora.aritek.app/generated/t2vStS511078a82a8c8y9rmc0ctbx3ry8nby0-ft3.1.0.mp4"
+        },
+        {
+          "i": 10,
+          "ok": false,
+          "ms": 418,
+          "err": "Rate limit exceeded http=429 code=-22",
+          "code": -22,
+          "http": 429
+        }
+      ],
+      "device": "4deec9ede45bd4cf015a820a63f26358"
+    }
+  ]
+}

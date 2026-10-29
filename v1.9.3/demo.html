@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AIVG v1.9.3 · 本地 Demo</title>
+<style>
+  :root{--bg:#0b0e14;--card:#141926;--line:#232b3d;--fg:#e6edf7;--dim:#8b98b0;--accent:#5b8cff;--ok:#39d98a;--warn:#ffb020;--err:#ff5c72}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 20% -10%,#1a2338 0,var(--bg) 60%);color:var(--fg);
+       font:14px/1.6 "Segoe UI",system-ui,-apple-system,"Microsoft YaHei",sans-serif;min-height:100vh}
+  header{padding:22px 28px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  h1{font-size:19px;margin:0;letter-spacing:.4px}
+  .tag{font-size:11px;padding:2px 8px;border:1px solid var(--line);border-radius:99px;color:var(--dim)}
+  .wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:22px 28px;max-width:1500px}
+  @media(max-width:1000px){.wrap{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card h2{font-size:13px;margin:0 0 14px;color:var(--dim);font-weight:600;letter-spacing:1px;text-transform:uppercase}
+  label{display:block;font-size:12px;color:var(--dim);margin:12px 0 6px}
+  textarea,select,input{width:100%;background:#0d1220;color:var(--fg);border:1px solid var(--line);border-radius:9px;
+       padding:10px 12px;font:inherit;outline:none}
+  textarea{min-height:96px;resize:vertical}
+  textarea:focus,select:focus{border-color:var(--accent)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .btn{margin-top:16px;width:100%;background:linear-gradient(180deg,#5f8dff,#3f6dff);border:0;color:#fff;
+       padding:12px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  .btn.ghost{background:#1d2537;border:1px solid var(--line);font-weight:500;font-size:13px;padding:9px}
+  #out{min-height:320px;display:flex;align-items:center;justify-content:center;background:#0a0e17;
+       border:1px dashed var(--line);border-radius:12px;overflow:hidden}
+  #out video,#out img{max-width:100%;max-height:480px;display:block}
+  .meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--dim)}
+  .meta b{color:var(--fg);font-weight:600}
+  #log{margin-top:14px;height:150px;overflow:auto;background:#080c14;border:1px solid var(--line);
+       border-radius:10px;padding:10px;font:12px/1.5 ui-monospace,Consolas,monospace;color:#9fb0cc;white-space:pre-wrap}
+  .pill{display:inline-block;padding:1px 7px;border-radius:99px;font-size:11px;border:1px solid var(--line)}
+  .pill.ok{color:var(--ok);border-color:#1d4335}.pill.err{color:var(--err);border-color:#4a1f28}
+  #pool{font:12px/1.6 ui-monospace,Consolas,monospace;color:#9fb0cc;white-space:pre-wrap;max-height:190px;overflow:auto}
+  .hint{font-size:11px;color:#61708c;margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>AIVG v1.9.3 · 本地 Demo 网关</h1>
+  <span class="tag">ai.video.generator.text.video</span>
+  <span class="tag">上游 t2v.aritek.app</span>
+  <span class="tag" id="health">健康检查中…</span>
+</header>
+
+<div class="wrap">
+  <section class="card">
+    <h2>生成</h2>
+    <label>接口</label>
+    <select id="ep">
+      <option value="/t2v">t2v 文生视频（同步 MP4）</option>
+      <option value="/t2i">t2i 文生图（异步轮询 PNG）</option>
+      <option value="/v1/chat/completions">OpenAI chat/completions</option>
+      <option value="/v1/images/generations">OpenAI images/generations</option>
+    </select>
+
+    <label>Prompt（≤5000 字符）</label>
+    <textarea id="prompt">a neon-lit tokyo alley at night, rain reflections, cinematic camera push-in, 4k</textarea>
+
+    <div class="row">
+      <div>
+        <label>aspect_ratio</label>
+        <select id="aspect">
+          <option value="">默认</option>
+          <option value="9:16">9:16</option>
+          <option value="16:9">16:9</option>
+          <option value="1:1">1:1</option>
+        </select>
+      </div>
+      <div>
+        <label>ai_sound</label>
+        <select id="sound"><option value="0">0 关</option><option value="1">1 开</option></select>
+      </div>
+    </div>
+
+    <button class="btn" id="go">▶ 生成</button>
+    <button class="btn ghost" id="clear">清空日志</button>
+    <div class="hint">产物直链：sora.aritek.app（v1.9.3 起无需 Sign/Bearer 头即可下载）</div>
+  </section>
+
+  <section class="card">
+    <h2>结果</h2>
+    <div id="out"><span style="color:#4a5670">尚未生成</span></div>
+    <div class="meta" id="meta"></div>
+    <h2 style="margin-top:20px">日志</h2>
+    <div id="log"></div>
+    <h2 style="margin-top:18px">号池</h2>
+    <div id="pool">—</div>
+  </section>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const logEl = $('#log');
+function log(msg, cls) {
+  const t = new Date().toLocaleTimeString('zh-CN', {hour12:false});
+  logEl.insertAdjacentHTML('afterbegin', `<div>${t}  <span class="${cls||''}">${msg}</span></div>`);
+}
+const esc = s => String(s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+
+async function health() {
+  try {
+    const r = await fetch('/health'); const j = await r.json();
+    $('#health').textContent = `上游 ${j.upstream} · v${j.version} · up ${j.uptime_s}s`;
+    $('#health').className = 'tag pill ok';
+  } catch (e) { $('#health').textContent = '网关未启动'; $('#health').className = 'tag pill err'; }
+}
+
+async function pool() {
+  try {
+    const j = await (await fetch('/stats')).json();
+    $('#pool').textContent =
+      `存活设备 ${j.devices} | 新建 ${j.stats.devices_created} | bootstrap ${j.stats.bootstraps}\n` +
+      (j.detail || []).map(d => `  ${d.device}… used=${d.used} remaining=${JSON.stringify(d.remaining)} total=${JSON.stringify(d.total)}`).join('\n');
+  } catch (e) {}
+}
+
+$('#go').onclick = async () => {
+  const ep = $('#ep').value, prompt = $('#prompt').value.trim();
+  if (!prompt) return log('prompt 不能为空', 'pill err');
+  const isChat = ep.includes('chat'), isImg = ep.includes('images');
+  const body = isChat
+    ? {model: 'aivg-t2v', messages: [{role: 'user', content: prompt}]}
+    : isImg ? {prompt, n: 1} : {prompt, aspect_ratio: $('#aspect').value, ai_sound: +$('#sound').value};
+  $('#go').disabled = true;
+  const t0 = performance.now();
+  log(`POST ${ep}  ${prompt.slice(0, 48)}…`);
+  try {
+    const r = await fetch(ep, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+    const raw = await r.text();
+    let j; try { j = JSON.parse(raw); } catch (e) { j = {raw}; }
+    const dt = Math.round(performance.now() - t0);
+    if (!r.ok) { log(`✗ ${r.status} ${esc(raw.slice(0, 300))}`, 'pill err'); return; }
+    let url = j.url, kind = j.type;
+    if (j.choices) { const c = j.choices[0].message.content; const m = c.match(/\((.*)\)/); url = m ? m[1] : url; kind = c.includes('[video]') ? 'video' : 'image'; }
+    if (j.data) { url = j.data[0].url; kind = 'image'; }
+    if (!url) { log('✗ 响应无 url: ' + esc(raw.slice(0, 300)), 'pill err'); return; }
+    const out = $('#out');
+    out.innerHTML = kind === 'video'
+      ? `<video src="${esc(url)}" controls autoplay muted loop playsinline></video>`
+      : `<img src="${esc(url)}" alt="result">`;
+    $('#meta').innerHTML = `<span>类型 <b>${kind}</b></span><span>耗时 <b>${dt} ms</b></span>` +
+      `<span>设备 <b>${j.device || '-'}</b></span><span>直链 <a href="${esc(url)}" target="_blank" style="color:#5b8cff">打开</a></span>`;
+    log(`✓ ${dt} ms  ${url}`, 'pill ok');
+  } catch (e) {
+    log('✗ ' + esc(e.message), 'pill err');
+  } finally { $('#go').disabled = false; pool(); }
+};
+$('#clear').onclick = () => logEl.innerHTML = '';
+health(); pool(); setInterval(pool, 5000); setInterval(health, 20000);
+</script>
+</body>
+</html>

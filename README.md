@@ -1,6 +1,7 @@
-# AI Video Generator (aritek) 2API — 1.8.8 与 1.9.1 双版本逆向仓库
+# AI Video Generator (aritek) 2API — 1.8.8 / 1.9.1 / 1.9.3 三版本逆向仓库
 
-> **🆕 v1.9.1 b91 全链路打通版** → [v1.9.1/](v1.9.1/REVERSE_REPORT_v191.md)：生产 t2v.aritek.app v4 协议、Sign 白名单值破解、guest JWT 自动 bootstrap、t2v 同步出 MP4 / t2i 异步 PNG、OpenAI 兼容 demo_server。
+> **🆕 v1.9.3 b93 复测版** → [v1.9.3/](v1.9.3/REVERSE_REPORT_v193.md)：纯协议复现（无 APK/模拟器/Frida）、协议零破坏、配额矩阵扩张至 11 类 guest 免费、CDN 去掉签名校验、本地 demo + 双轮压测全绿、new-api type 69 渠道对齐。
+> **v1.9.1 b91 全链路打通版** → [v1.9.1/](v1.9.1/REVERSE_REPORT_v191.md)：生产 t2v.aritek.app v4 协议、Sign 白名单值破解、guest JWT 自动 bootstrap、t2v 同步出 MP4 / t2i 异步 PNG、OpenAI 兼容 demo_server。
 
 ---
 
